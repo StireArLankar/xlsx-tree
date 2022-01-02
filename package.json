@@ -1,15 +1,19 @@
 {
   "name": "xlsx-tree",
   "version": "0.0.0",
+  "homepage": "https://stirearlankar.github.io/xlsx-tree",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.7.3",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
+    "@stitches/react": "^1.2.6",
     "framer-motion": "^5",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
