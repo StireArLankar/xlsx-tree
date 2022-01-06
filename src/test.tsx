@@ -86,6 +86,7 @@ export default function SheetJSApp(props: Props) {
             if (!parent) {
               parents.unshift(test)
             } else {
+              parent._children.push(test)
               test.parent = parent?.kee
             }
           }
@@ -96,22 +97,6 @@ export default function SheetJSApp(props: Props) {
 
           return test
         })
-
-        const map = newData.reduce((acc, cur) => {
-          acc[cur.kee] = cur
-          return acc
-        }, {} as Record<any, Data>)
-
-        newData.forEach((item) => {
-          const parent = map[item.parent]
-
-          if (!parent) {
-            return
-          }
-
-          parent._children.push(item)
-        })
-
         console.log(newData)
 
         let root = newData.reduce((acc, cur) => {

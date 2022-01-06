@@ -49,8 +49,8 @@ export const Tree = memo((props: TreeProps) => {
           </AccordionButton>
           <AccordionPanel pb={4}>
             <div className={classes.content()}>
-              {props._children.map((node, index) => (
-                <Tree {...node} key={index} />
+              {props._children.map((node) => (
+                <Tree {...node} key={node.kee} />
               ))}
             </div>
           </AccordionPanel>
