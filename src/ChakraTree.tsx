@@ -16,6 +16,7 @@ export type Data = {
   division: any
   parent: any
   title: any
+  _temp: any
   _children: Data[]
 }
 
@@ -35,6 +36,7 @@ export const Tree = memo((props: TreeProps) => {
               background: 'transparent',
               border: 0,
               cursor: 'pointer',
+              maxWidth: 'max-content',
             }}
           >
             <AccordionIcon
@@ -43,7 +45,7 @@ export const Tree = memo((props: TreeProps) => {
                 marginRight: 8,
               }}
             />
-            {props.title ?? 'NO TITLE ' + props.kee}
+            {props.title ?? 'NO TITLE ' + props._temp}
           </AccordionButton>
           <AccordionPanel pb={4}>
             <div className={classes.content()}>
@@ -75,7 +77,7 @@ export const Tree = memo((props: TreeProps) => {
             fontSize: 16,
           }}
         >
-          {props.title ?? 'NO TITLE ' + props.kee}
+          {props.title ?? 'NO TITLE ' + props._temp}
         </Text>
       </div>
     </div>

@@ -65,9 +65,10 @@ export default function SheetJSApp(props: Props) {
 
         const newData = data.map((item) => {
           const test: Data = {
-            kee: item[6] || '_' + generateId.next().value,
+            kee: item[6]?.toString() || '_' + generateId.next().value,
             division: item[11] ? +item[11].slice(1) : undefined,
-            parent: item[12],
+            parent: item[12]?.toString(),
+            _temp: item[13],
             title: item[15],
             _children: [],
           }
