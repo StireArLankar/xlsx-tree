@@ -22,11 +22,13 @@ function App() {
         </ChakraProvider>
       )}
 
-      <Box p={20} paddingTop={0}>
-        {data.map((item) => (
-          <Tree key={item.title} {...item} defaultOpen />
-        ))}
-      </Box>
+      {data.length > 0 && (
+        <Box p={20} paddingTop={0}>
+          {data.map((item, index) => (
+            <Tree key={index} {...item} defaultOpen />
+          ))}
+        </Box>
+      )}
     </Suspense>
   )
 }

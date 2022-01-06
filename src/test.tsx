@@ -1,11 +1,20 @@
 import React, { ChangeEvent, useRef, useState } from 'react'
-import type { Data } from './Tree'
+import type { Data } from './ChakraTree'
 import { Center, Button } from '@chakra-ui/react'
 import XLSX from 'xlsx'
 
 type Props = { setData: (data: Data[]) => void }
 
-type Zxc = Data & { key: string; indexInGroup: string; parent: string; pos: number }
+function* _generateId() {
+  let id = 1
+
+  while (true) {
+    yield id
+    id++
+  }
+}
+
+const generateId = _generateId()
 
 export default function SheetJSApp(props: Props) {
   const [isLoading, setIsLoading] = useState(false)
@@ -26,80 +35,119 @@ export default function SheetJSApp(props: Props) {
         const ws = wb.Sheets[wsname]
 
         /* Convert array of arrays */
-        const data = XLSX.utils.sheet_to_json(ws, { header: 1 })
+        let data = XLSX.utils.sheet_to_json<any>(ws, { header: 1 })
 
-        const temp = data
-          .map((item: any) => {
-            if (item[11]) {
-              return {
-                type: 'branch',
-                key: item[6],
-                indexInGroup: item[10],
-                pos: +item[11].slice(1),
-                parent: item[12],
-                title: item[15],
-                nodes: [],
-              } as Zxc
-            }
+        let item: any
 
-            return {
-              type: 'leaf',
-              key: item[6],
-              indexInGroup: item[10],
-              pos: 0,
-              parent: item[12],
-              title: item[15],
-            } as Zxc
-          })
-          .filter((item) => Boolean(item.indexInGroup))
-          .slice(2)
+        while (true) {
+          item = data[0]
 
-        const temp2 = temp.reduce((acc, cur) => {
-          const lastIndex = acc.length - 1
-          const curIndex = cur.indexInGroup
+          if (!item) {
+            break
+          }
 
-          if (curIndex === '1') {
-            acc.push([cur])
+          if (typeof item[11] !== 'string') {
+            data.shift()
           } else {
-            acc[lastIndex].push(cur)
+            break
+          }
+        }
+
+        data.shift()
+
+        if (data.length === 0) {
+          throw new Error('')
+        }
+
+        data = data.filter((item) => Boolean(item[11]) || Boolean(item[12]) || Boolean(item[15]))
+
+        const parents: Data[] = []
+
+        const newData = data.map((item) => {
+          const test: Data = {
+            kee: item[6] || '_' + generateId.next().value,
+            division: item[11] ? +item[11].slice(1) : undefined,
+            parent: item[12],
+            title: item[15],
+            _children: [],
+          }
+
+          if (parents.length === 0) {
+            parents.unshift(test)
+            return test
+          }
+
+          if (!test.parent) {
+            const parent = parents.find((item) =>
+              typeof test.division === 'number' ? item.division < test.division : true
+            )
+
+            if (!parent) {
+              parents.unshift(test)
+            } else {
+              test.parent = parent?.kee
+            }
+          }
+
+          if (test.division) {
+            parents.unshift(test)
+          }
+
+          return test
+        })
+
+        const map = newData.reduce((acc, cur) => {
+          acc[cur.kee] = cur
+          return acc
+        }, {} as Record<any, Data>)
+
+        newData.forEach((item) => {
+          const parent = map[item.parent]
+
+          if (!parent) {
+            return
+          }
+
+          parent._children.push(item)
+        })
+
+        console.log(newData)
+
+        let root = newData.reduce((acc, cur) => {
+          if (typeof cur.division !== 'number') {
+            return acc
+          }
+
+          const temp = acc[0]
+
+          if (!temp) {
+            acc.push(cur)
+            return acc
+          }
+
+          if (cur.division === temp.division) {
+            acc.push(cur)
+            return acc
+          }
+
+          if (cur.division < temp.division) {
+            return [cur]
           }
 
           return acc
-        }, [] as typeof temp[])
+        }, [] as Data[])
 
-        let currentParent: typeof temp[number]
+        console.log(root)
 
-        temp2.forEach((temp) =>
-          temp.reduce((acc, item) => {
-            if (item.pos) {
-              const parent = acc
-                .slice()
-                .reverse()
-                .find((i) => i?.pos && i.pos < (item as any).pos)
+        if (root.length === 1) {
+          root = root[0]._children
+        }
 
-              item.parent = parent?.key ?? ''
-
-              if (parent && 'nodes' in parent) {
-                parent.nodes?.push(item)
-              }
-
-              currentParent = item
-            } else {
-              if (currentParent && 'nodes' in currentParent) {
-                currentParent.nodes?.push(item)
-              }
-              item.parent = currentParent?.key
-            }
-            acc.push(item)
-            return acc
-          }, [] as typeof temp)
-        )
-
-        props.setData(temp2.map((item) => item[0]) as any)
-
-        if (temp2.length === 0) {
+        if (!root || root.length === 0) {
           throw new Error('')
         }
+
+        props.setData(root)
       } catch (e) {
         console.log(e)
         setTimeout(() => {

@@ -11,22 +11,13 @@ import {
 import React, { memo } from 'react'
 import classes from './styles'
 
-type Base = {
-  meta?: boolean
-  title: string
+export type Data = {
+  kee: any
+  division: any
+  parent: any
+  title: any
+  _children: Data[]
 }
-
-export type Data = Base &
-  (
-    | {
-        type: 'branch'
-        nodes: Data[]
-      }
-    | {
-        type: 'leaf'
-        title: string
-      }
-  )
 
 type TreeProps = Data & {
   style?: React.CSSProperties
@@ -34,11 +25,9 @@ type TreeProps = Data & {
 }
 
 export const Tree = memo((props: TreeProps) => {
-  const { style } = props
-
-  if (props.type === 'branch') {
+  if (props._children.length !== 0) {
     return (
-      <Accordion defaultIndex={[]} allowMultiple>
+      <Accordion allowToggle>
         <AccordionItem>
           <AccordionButton
             css={{
@@ -54,12 +43,12 @@ export const Tree = memo((props: TreeProps) => {
                 marginRight: 8,
               }}
             />
-            {props.title}
+            {props.title ?? 'NO TITLE ' + props.kee}
           </AccordionButton>
           <AccordionPanel pb={4}>
             <div className={classes.content()}>
-              {props.nodes.map((node) => (
-                <Tree {...node} key={node.title} />
+              {props._children.map((node, index) => (
+                <Tree {...node} key={index} />
               ))}
             </div>
           </AccordionPanel>
@@ -86,19 +75,13 @@ export const Tree = memo((props: TreeProps) => {
             fontSize: 16,
           }}
         >
-          {props.title}
+          {props.title ?? 'NO TITLE ' + props.kee}
         </Text>
-        {props.meta ? <M /> : null}
       </div>
     </div>
   )
 })
 
-const M = () => (
-  <svg viewBox='0 0 24 24' width={16}>
-    <path d='M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z' />
-  </svg>
-)
 const Table = (props: { className?: string }) => (
   <svg {...props} viewBox='0 0 24 24' width={16}>
     <path d='M10 10.02h5V21h-5zM17 21h3c1.1 0 2-.9 2-2v-9h-5v11zm3-18H5c-1.1 0-2 .9-2 2v3h19V5c0-1.1-.9-2-2-2zM3 19c0 1.1.9 2 2 2h3V10H3v9z' />
