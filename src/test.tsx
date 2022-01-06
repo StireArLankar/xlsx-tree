@@ -89,6 +89,12 @@ export default function SheetJSApp(props: Props) {
               parent._children.push(test)
               test.parent = parent?.kee
             }
+          } else {
+            const parent = parents.find((item) => item.kee === test.parent)
+
+            if (parent) {
+              parent._children.push(test)
+            }
           }
 
           if (test.division) {
@@ -97,6 +103,7 @@ export default function SheetJSApp(props: Props) {
 
           return test
         })
+
         console.log(newData)
 
         let root = newData.reduce((acc, cur) => {
