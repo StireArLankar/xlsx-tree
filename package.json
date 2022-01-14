@@ -1,7 +1,6 @@
 {
   "name": "xlsx-tree",
   "version": "0.0.0",
-  "homepage": "https://stirearlankar.github.io/xlsx-tree",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
