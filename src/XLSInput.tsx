@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useRef, useState } from 'react'
-import type { Data } from './ChakraTree'
+import type { Data } from './Tree'
 import { Center, Button } from '@chakra-ui/react'
 import XLSX from 'xlsx'
 
@@ -16,7 +16,7 @@ function* _generateId() {
 
 const generateId = _generateId()
 
-export default function SheetJSApp(props: Props) {
+export const XLSInput = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(false)
 
@@ -160,10 +160,8 @@ export default function SheetJSApp(props: Props) {
   )
 }
 
-function DragDropFile({
-  handleFile,
-  children,
-}: React.PropsWithChildren<{ handleFile: (file: File) => void }>) {
+type DragAndDropFileProps = React.PropsWithChildren<{ handleFile: (file: File) => void }>
+const DragDropFile = ({ handleFile, children }: DragAndDropFileProps) => {
   const [isHovered, setIsHovered] = useState(false)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -220,15 +218,13 @@ function DragDropFile({
   )
 }
 
-function DataInput({
-  handleFile,
-  isLoading,
-  error,
-}: {
+type DataInputProps = {
   handleFile: (file: File) => void
   isLoading: boolean
   error: boolean
-}) {
+}
+
+const DataInput = ({ handleFile, isLoading, error }: DataInputProps) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files && files[0]) {
@@ -241,7 +237,7 @@ function DataInput({
   return (
     <form>
       <Button
-        onClick={(e) => ref.current?.click()}
+        onClick={() => ref.current?.click()}
         isLoading={isLoading}
         borderColor={error ? 'red' : `transparent`}
         borderWidth={2}

@@ -1,9 +1,7 @@
 import { Suspense, useState } from 'react'
 import { ChakraProvider, Button, Box } from '@chakra-ui/react'
-import SheetJSApp from './test'
-// import { Data, Tree } from './Tree'
-// import { Data, Tree } from './AnimatedTree'
-import { Data, Tree } from './ChakraTree'
+import { XLSInput } from './XLSInput'
+import { Data, Tree } from './Tree'
 
 function App() {
   const [data, setData] = useState<Data[]>([])
@@ -12,7 +10,7 @@ function App() {
     <Suspense fallback={null}>
       {data.length === 0 ? (
         <ChakraProvider>
-          <SheetJSApp setData={setData} />
+          <XLSInput setData={setData} />
         </ChakraProvider>
       ) : (
         <ChakraProvider>
